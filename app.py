@@ -1,7 +1,9 @@
 import base64
+from re import I
 
 import dash
 import dash_core_components as dcc
+import dash_table as dt
 import dash_html_components as html
 import pandas as pd
 import plotly.express as px
@@ -28,11 +30,6 @@ genre_amount = [len(spotify_df [ spotify_df ['genre'] == genre ]) for genre in f
 filter_artist_list = list(dict.fromkeys(artist))
 filtered_keys = list(dict.fromkeys(key))
 
-sheck_west_song = spotify_df[spotify_df['artist_name'].isin(['Sheck Wes'])]
-
-sheck_west_song.set_index(['artist_name', 'genre', 'popularity'], inplace=True)
-sorted_sheck_wes = sheck_west_song.sort_index()
-
 
 external_stylesheets = [
     {
@@ -57,6 +54,17 @@ app.layout = html.Div(
             ],
             className='top-section'
         ),
+        html.Div(children= [
+           html.H1(children='Example of Data Set worked with', id='expData'),
+           html.Div(children = [dt.DataTable(     
+                                id='table',
+                                style_table={'overflowX':'auto'},
+                                page_size =  931,
+                                columns=[{"name": j, "id": j} for j in spotify_df.columns],
+                                data=spotify_df.to_dict('records'),)], className='dataFrame-holder')
+
+            
+            ]),
         #graphs
         html.Div(
             children=[
@@ -84,14 +92,25 @@ app.layout = html.Div(
             ],
             className='graph2'
         ),
+        html.Div(children= [
+            dcc.Dropdown( id=' first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
+                        ])
+            
+            ], className='frst-drpdwn'),
+        
+        
         html.Div(
             children=[
-                #footer infomration
+                html.H1(children='Enjoy The Data :).'),
+                html.P(children='Information Provided by Kaggle.'),
+                html.A(children='GitHub to other projects', href='https://github.com/joseh8455')
             ],
             className='footer'
         )
     ]
 )
+
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)

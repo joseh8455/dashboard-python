@@ -9,7 +9,7 @@ body{
     left: 0;
     top: 0;
     overflow: hidden;
-    position: fixed;
+    position: absolute;
 }
 
 #top-h1 {
@@ -39,8 +39,14 @@ body{
     margin-top: 1rem ;
 }
 
+.dataFrame-holder {
+    height: 40em;
+    width: auto;
+}
+
 .graph1 {
     margin-top: 20em;
+
 }
 
 .footer {
