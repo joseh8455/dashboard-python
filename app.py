@@ -1,4 +1,3 @@
-import base64
 from re import I
 
 import dash
@@ -55,16 +54,20 @@ app.layout = html.Div(
             className='top-section'
         ),
         html.Div(children= [
-           html.H1(children='Example of Data Set worked with', id='expData'),
+           html.H1(children='Example of Data Set worked with', id='expData',style={'margin-top':'350px'}),
            html.Div(children = [dt.DataTable(     
                                 id='table',
-                                style_table={'overflowX':'auto'},
-                                page_size =  931,
+                                style_table={ 'height': '300px','width':'800px', 'overflowY': 'auto'},
+                                fill_width = False,
                                 columns=[{"name": j, "id": j} for j in spotify_df.columns],
-                                data=spotify_df.to_dict('records'),)], className='dataFrame-holder')
+                                data=spotify_df.to_dict('records'),)], className='dataFrame-holder'),
+           html.P(children="Labore magna ad ipsum consequat duis laborum in consequat velit veniam excepteur adipisicing dolor. Quis nostrud esse pariatur cillum enim velit aute nulla. Minim officia minim"+ 
+                  "sint quis dolore duis consectetur consequat sit officia incididunt aute non dolor. Commodo occaecat nisi voluptate pariatur ea velit pariatur. Ex adipisicing elit aute magna quis nostrud"+
+                  "voluptate aliquip tempor voluptate ad sunt consectetur.",className='exmp_dfset')
 
             
-            ]),
+            ],
+                 className="midSection"),
         #graphs
         html.Div(
             children=[
@@ -93,6 +96,7 @@ app.layout = html.Div(
             className='graph2'
         ),
         html.Div(children= [
+            #id is used to tie to more charts down the road
             dcc.Dropdown( id=' first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
                         ])
             
