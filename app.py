@@ -105,9 +105,9 @@ app.layout = html.Div(
         
         html.Div(
             children=[
-                html.H1(children='Enjoy The Data :).'),
-                html.P(children='Information Provided by Kaggle.'),
-                html.A(children='GitHub to other projects', href='https://github.com/joseh8455')
+                html.H1(children='Enjoy The Data :).',className='footer-header'),
+                html.H2(children='Information Provided by Kaggle.', className='footer-info'),
+                html.A(children='GitHub to other projects', href='https://github.com/joseh8455', className='footer-link')
             ],
             className='footer'
         )
