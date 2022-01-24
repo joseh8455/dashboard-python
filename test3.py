@@ -24,12 +24,10 @@ for index, row in spotify_df.iterrows():
 #filtered list in dataset downloaded
 filter_genre_list = list(dict.fromkeys(type_of_genres))
 
-def everyCatgr():
-    
-    ctgrs = f"'{*filter_genre_list,}'"
-    
-    return ctgrs
+def meanPopularity():
+    return key
 
-strVal = everyCatgr()
+keys = meanPopularity()
 
-print (strVal)
+
+print (keys)
