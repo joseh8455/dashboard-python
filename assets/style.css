@@ -12,6 +12,19 @@ body{
     position: absolute;
 }
 
+.dash-table-container .dash-spreadsheet-container {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    line-height: initial;
+    float: left;
+}
+
+.dash-table-container .previous-next-container {
+    text-align: right;
+    padding: 5px 0px;
+    float: left;
+}
 #top-h1 {
     color: #CFCFCF;
     margin: 10px auto;
@@ -38,11 +51,15 @@ body{
     text-align: center;
     margin-top: 1rem ;
 }
+#first-graph {
+    margin-top: 250px;
+}
 
 .exmp_dfset {
     text-align: center;
     right: 3em;
     top: 50rem;
+    margin-top: 50px;
 }
 
 .footer {
