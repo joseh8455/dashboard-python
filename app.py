@@ -1,12 +1,14 @@
 from re import I
 
 import dash
-import dash_core_components as dcc
-import dash_table as dt
-import dash_html_components as html
+from dash import dcc as dcc
+import dash.dash_table as dt
+from dash import html as html
+from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
 
+from tset4 import most_frequent
 
 spotify_df = pd.read_csv('SpotifyFeatures.csv')
 
@@ -84,7 +86,7 @@ app.layout = html.Div(
                         "layout" : {"title" : "Genres and how many times they show up in Data Set"},
                         # 'style' : {}
                     },
-                    id="first=graph"
+                    id="first-graph"
                 ),
             ],
             className='graph1'
@@ -96,12 +98,17 @@ app.layout = html.Div(
             className='graph2'
         ),
         html.Div(children= [
+            html.Div(id = 'dd-output1'),
             #id is used to tie to more charts down the road
-            dcc.Dropdown( id=' first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
-                        ])
+            dcc.Dropdown( id='first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
+                        ], placeholder="Category of music", className = "drpdwn-musiccat")
             
-            ], className='frst-drpdwn'),
-        
+            ]
+            
+                 ,className='frst-drpdwn'),
+        html.Div(children = [
+                html.H1(id = "common-letter")
+            ],className=""),
         
         html.Div(
             children=[
@@ -114,7 +121,22 @@ app.layout = html.Div(
     ]
 )
 
+@app.callback(
+    Output(component_id='dd-output1', component_property='children'),
+    Input(component_id='first-Query', component_property='value')
+)
+def update_output_div(input_value):
+    return 'You have selected to go in depth with: {}'.format(input_value)
 
+@app.callback(
+    Output(component_id='common-letter', component_property='children'),
+    Input(component_id='first-Query', component_property='value')
+)
+def commonLetter(input_value):
+    genre = spotify_df[['genre','key']]
+    keys = genre.loc[genre['genre'] == '{}'.format(input_value)]
+    common_letter = most_frequent(keys['key'].tolist())
+    return "This is the common key based on {}".format(input_value) + ":" + common_letter
 
 if __name__ == "__main__":
     app.run_server(debug=True)
