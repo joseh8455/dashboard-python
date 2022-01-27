@@ -1,17 +1,15 @@
-from re import I
-
+from collections import Counter
+import re
 import dash
-import dash_core_components as dcc
-import dash_table as dt
-import dash_html_components as html
+from dash import dcc as dcc
+import dash.dash_table as dt
+from dash import html as html
+from dash.dependencies import Input, Output
 import pandas as pd
-import plotly.express as px
 
+from test4 import most_frequent
 
 spotify_df = pd.read_csv('SpotifyFeatures.csv')
-
-anime_songs = spotify_df[spotify_df['genre'].isin(['Anime'])]
-
 
 type_of_genres = []
 artist = []
@@ -29,6 +27,44 @@ genre_amount = [len(spotify_df [ spotify_df ['genre'] == genre ]) for genre in f
 filter_artist_list = list(dict.fromkeys(artist))
 filtered_keys = list(dict.fromkeys(key))
 
+def common_word(x):
+    titles = spotify_df[['track_name','genre']]
+
+    titleOfSong = titles.loc[titles['genre'] == x]
+
+    list_of_songs = titleOfSong['track_name'].tolist()
+    newlist = [word for word in list_of_songs for word in word.split()]
+    regex = re.compile(r'\(.*|feat$|-|/|.[Tt]he|and|a|A|The|Pt.|I\'m')
+
+    pre_filter1 = [i for i in newlist if not regex.match(i)]
+
+    from nltk.corpus import stopwords
+    stop_words = stopwords.words('english')
+    upper_words = []
+    cap_words = []
+    for j in range(len(stop_words)):
+        upper_words.append(stop_words[j].upper())
+        cap_words.append(stop_words[j].capitalize())
+        
+    
+    pre_filter2 = [x for x in pre_filter1 if not x in stop_words]
+    pre_filter3 = [y for y in pre_filter2 if not y in upper_words]
+    pre_filter4 = [z for z in pre_filter3 if not z in cap_words]
+
+    #this gets the most common word
+    count = Counter(pre_filter4)
+    most_occur = count.most_common(10)
+
+    words_common = []
+
+    words_count = []
+
+    for i in most_occur:
+        words_common.append(i[0])
+        words_count.append(i[1])
+
+    full_count = [words_common, words_count]
+    return full_count
 
 external_stylesheets = [
     {
@@ -84,7 +120,7 @@ app.layout = html.Div(
                         "layout" : {"title" : "Genres and how many times they show up in Data Set"},
                         # 'style' : {}
                     },
-                    id="first=graph"
+                    id="first-graph"
                 ),
             ],
             className='graph1'
@@ -96,12 +132,22 @@ app.layout = html.Div(
             className='graph2'
         ),
         html.Div(children= [
+            html.Div(id = 'dd-output1'),
             #id is used to tie to more charts down the road
-            dcc.Dropdown( id=' first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
-                        ])
+            dcc.Dropdown( id='first-Query', options= [{'label': i ,'value': i}for i in filter_genre_list
+                        ], placeholder="Category of music", className = "drpdwn-musiccat")
             
-            ], className='frst-drpdwn'),
+            ]
+            
+                 ,className='frst-drpdwn'),
+        html.Div(children = [
+                html.H1(id = "common-letter"),
+                html.P(id = "common-word")
+            ],className=""),
         
+        html.Div(
+            id="common-word-graph"
+        ),
         
         html.Div(
             children=[
@@ -113,6 +159,45 @@ app.layout = html.Div(
         )
     ]
 )
+
+@app.callback(
+    Output(component_id='dd-output1', component_property='children'),
+    Input(component_id='first-Query', component_property='value')
+)
+def update_output_div(input_value):
+    return 'You have selected to go in depth with: {}'.format(input_value)
+
+@app.callback(
+    Output(component_id='common-letter', component_property='children'),
+    Input(component_id='first-Query', component_property='value')
+)
+def commonLetter(input_value):
+    genre = spotify_df[['genre','key']]
+    keys = genre.loc[genre['genre'] == '{}'.format(input_value)]
+    common_letter = most_frequent(keys['key'].tolist())
+    return "This is the common key note based on {}".format(input_value) + ":" + common_letter
+
+@app.callback(
+    Output(component_id="common-word-graph", component_property="children"),
+    Input(component_id="first-Query", component_property="value")
+)
+def commonWords(input_value):
+    words = common_word("{}".format(input_value))[0]
+    wordCount = common_word("{}".format(input_value))[1]
+
+    word_count = dcc.Graph(
+        figure= {
+            "data":[
+                    {
+                        "x": words,
+                        "y" : wordCount,
+                        "type": "bar"
+                    },
+                ],
+            "layout" : {"title" : "Top 10 Most Common Word"},
+        }
+    )
+    return word_count
 
 
 
